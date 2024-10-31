@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love DNA Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4a148c, #000);
+            font-family: 'Arial', sans-serif;
+        }
+        .dna-card {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .dna-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .dna-sequence {
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-6">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-pink-300 mb-4">Love DNA Explorer 💕</h1>
+            <p class="text-xl text-gray-300">Temukan kecocokan sejati Anda</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="dna-card p-8 rounded-2xl">
+                <h2 class="text-3xl font-semibold mb-6 text-pink-200">Profil Pasangan</h2>
+                <div class="space-y-4">
+                    <input 
+                        type="text" 
+                        id="name1" 
+                        placeholder="Nama Pasangan 1" 
+                        class="w-full p-3 bg-purple-700 rounded-lg text-white"
+                    >
+                    <input 
+                        type="text" 
+                        id="name2" 
+                        placeholder="Nama Pasangan 2" 
+                        class="w-full p-3 bg-purple-700 rounded-lg text-white"
+                    >
+                    <div id="compatibilityScore" class="bg-purple-900 p-4 rounded-lg flex items-center">
+                        <span class="mr-2">💫 Tingkat Kecocokan:</span>
+                        <span id="scoreDisplay" class="font-bold text-green-400">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid gap-4">
+                <div id="emotionalSection" class="dna-card p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl">Emotional Connection</h3>
+                        <button onclick="toggleSection('emotional')" class="text-2xl">🔒</button>
+                    </div>
+                    <div id="emotionalDetails" class="hidden">
+                        <p id="emotionalDNA" class="dna-sequence bg-purple-900 p-3 rounded-lg text-sm"></p>
+                        <p id="emotionalMatch" class="text-sm mt-2"></p>
+                    </div>
+                </div>
+
+                <div id="intellectualSection" class="dna-card p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl">Intellectual Connection</h3>
+                        <button onclick="toggleSection('intellectual')" class="text-2xl">🔒</button>
+                    </div>
+                    <div id="intellectualDetails" class="hidden">
+                        <p id="intellectualDNA" class="dna-sequence bg-purple-900 p-3 rounded-lg text-sm"></p>
+                        <p id="intellectualMatch" class="text-sm mt-2"></p>
+                    </div>
+                </div>
+
+                <!-- Similar sections for Physical and Spiritual -->
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <button 
+                onclick="regenerateDNA()" 
+                class="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 rounded-full transition-all"
+            >
+                🧬 Regenerate Love DNA
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const dnaBase = ['A', 'T', 'C', 'G'];
+        let dnaSequences = {
+            emotional: '',
+            intellectual: '',
+            physical: '',
+            spiritual: ''
+        };
+
+        function generateDNASequence(length = 20) {
+            return Array.from(
+                { length }, 
+                () => dnaBase[Math.floor(Math.random() * dnaBase.length)]
+            ).join('');
+        }
+
+        function compareSequence(sequence) {
+            const matchRate = sequence.split('').filter(
+                (base, index) => base === sequence[sequence.length - index - 1]
+            ).length / sequence.length;
+            return matchRate * 100;
+        }
+
+        function calculateCompatibility() {
+            const sections = ['emotional', 'intellectual', 'physical', 'spiritual'];
+            const compatibilityScores = sections.map(section => 
+                compareSequence(dnaSequences[section])
+            );
+            
+            const averageCompatibility = compatibilityScores.reduce((a, b) => a + b, 0) / 4;
+            document.getElementById('scoreDisplay').textContent = `${Math.round(averageCompatibility)}%`;
+
+            sections.forEach(section => {
+                const sectionMatch = compareSequence(dnaSequences[section]);
+                document.getElementById(`${section}DNA`).textContent = dnaSequences[section];
+                document.getElementById(`${section}Match`).textContent = `Kecocokan: ${sectionMatch.toFixed(2)}%`;
+            });
+        }
+
+        function regenerateDNA() {
+            Object.keys(dnaSequences).forEach(section => {
+                dnaSequences[section] = generateDNASequence();
+            });
+            calculateCompatibility();
+        }
+
+        function toggleSection(section) {
+            const detailsElement = document.getElementById(`${section}Details`);
+            detailsElement.classList.toggle('hidden');
+            const button = document.querySelector(`#${section}Section button`);
+            button.textContent = detailsElement.classList.contains('hidden') ? '🔒' : '🔓';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            regenerateDNA();
+        });
+    </script>
+</body>
+</html>
